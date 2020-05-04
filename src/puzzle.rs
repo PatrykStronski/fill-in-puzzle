@@ -63,6 +63,37 @@ impl Puzzle {
         return word;
     }
 
+    fn get_horizontal_word_vec(&self, mut index: usize) -> String {
+        let max = self.width * self.height;
+        let mut word = String::new();
+        while index < max {
+            if self.current_board[index] == '#' {
+                break;
+            }
+            word.push(self.current_board[index]);
+            index += self.width;
+        }
+        if word.len() < 2 {
+            return String::from("");
+        }
+        return word;
+    }
+
+    fn get_veritcal_word_vec(&self, index: usize) -> String {
+        let eof = self.calculate_eof(index);
+        let mut word = String::new();
+        for i in index..eof {
+            if self.current_board[i] == '#' {
+                break;
+            }
+            word.push(self.current_board[i]);
+        }
+        if word.len() < 2 {
+            return String::from("");
+        }
+        return word;
+    }
+
     pub fn get_word(&self, pos_x: usize, pos_y: usize, vertical: bool) -> String {
         if vertical {
             return self.get_veritcal_word(pos_x, pos_y);
@@ -107,5 +138,63 @@ impl Puzzle {
             return self.write_veritcal_word(word, pos_x, pos_y);
         }
         return self.write_horizontal_word(word, pos_x, pos_y);
+    }
+
+    fn get_word_index_from_lexicone(&self, curr_lexicone: &Vec<String>, word: String) -> i16 {
+        for x in 0..curr_lexicone.len() {
+            if word == curr_lexicone[x] {
+                return x as i16;
+            }
+        }
+        return -1;
+    }
+
+    fn remove_word_from_lexicone(&self, curr_lexicone: &mut Vec<String>, word: String) -> bool {
+        for x in 0..curr_lexicone.len() {
+            if word == curr_lexicone[x] {
+                curr_lexicone.remove(x);
+                return true;
+            }
+        }
+        return false;
+    }
+
+    fn validate_verticals(&self, curr_lexicone: &mut Vec<String>) -> bool {
+        let mut ind: usize = 0;
+        let max = self.current_board.len();
+        while ind < max {
+            let word = self.get_veritcal_word_vec(ind).to_string();
+            if word == "" {
+                ind += 1;
+                continue;
+            }
+            if self.remove_word_from_lexicone(curr_lexicone, word.to_string()) {
+                ind += word.len();
+            } else {
+                return false;
+            }
+        }
+        return true;
+    }
+
+    fn validate_horizontals(&self, curr_lexicone: &mut Vec<String>) -> bool {
+        let max = self.height;
+        for x in 0..self.width {
+            let mut y = 0;
+            while y < max {
+                let word = self.get_horizontal_word(x, y).to_string();
+                if self.remove_word_from_lexicone(curr_lexicone, word.to_string()) {
+                    y += word.len();
+                }
+            }
+        }
+        return true;
+    }
+
+    pub fn validate_puzzle(&self) -> bool {
+        let mut curr_lexicone = self.lexicone.to_vec();
+        let vertical = self.validate_verticals(&mut curr_lexicone);
+        let hortizontal = self.validate_horizontals(&mut curr_lexicone);
+        return vertical && hortizontal;
     }
 }
