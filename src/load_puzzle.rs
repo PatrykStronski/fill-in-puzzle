@@ -1,6 +1,7 @@
 use crate::puzzle::Puzzle;
 use std::fs::File;
 use std::io::{BufRead, BufReader, Error};
+use std::env;
 
 struct Board {
     height: usize,
@@ -12,15 +13,20 @@ fn get_board(filename: String) -> Result<Board, Error> {
     let file = File::open(filename)?;
     let content = BufReader::new(file);
 
-    let lines = content.lines();
-    let hght = lines.len()?;
-    let wdth = lines[0].len()?;
-
+    let mut hght = 0;
+    let mut wdth = 0;
+    let mut calculated = false;
     let mut brd = Vec::<char>::new();
-    for line in lines {
-        for c in line.chars() {
+    for line in content.lines() {
+        hght += 1;
+        let line_str = line?;
+        for c in line_str.chars() {
+            if calculated == false {
+                wdth += 1;
+            }
             brd.push(c);
         }
+        calculated = true;
     }
     Ok(Board {
         width: wdth,
@@ -40,8 +46,8 @@ fn get_lexicon(filename: String) -> Result<Vec<String>, Error> {
 }
 
 pub fn get_puzzle(number: usize) -> Result<Puzzle, Error> {
-    let puz_name = format!("./resources/puzzle{}", number)?;
-    let lexicon_name = format!("words{}", number)?;
+    let puz_name = format!("./resources/puzzle{}", number);
+    let lexicon_name = format!("./resources/words{}", number);
 
     let board = get_board(puz_name)?;
     let lexicon = get_lexicon(lexicon_name)?;
