@@ -11,11 +11,18 @@ impl Puzzle {
         return pos_y * self.width + pos_x;
     }
 
+    pub fn exceed_bonds(&self, pos_x: usize, pos_y: usize) -> bool {
+        return self.calculate_index(pos_x, pos_y) >= (self.width * self.height);
+    }
+
     fn calculate_eof(&self, ind: usize) -> usize {
         return (( ind / self.width ) +1 ) * self.width -1;
     }
 
-    fn get_element(&self, pos_x: usize, pos_y: usize) -> char {
+    pub fn get_element(&self, pos_x: usize, pos_y: usize) -> char {
+        if self.exceed_bonds(pos_x, pos_y) {
+            return '\0';
+        }
         return self.current_board[self.calculate_index(pos_x, pos_y)];
     }
 
@@ -133,7 +140,7 @@ impl Puzzle {
         return true;
     }
 
-    fn write_word(&mut self, word: String, pos_x: usize, pos_y: usize, vertical: bool) -> bool {
+    pub fn write_word(&mut self, word: String, pos_x: usize, pos_y: usize, vertical: bool) -> bool {
         if vertical {
             return self.write_veritcal_word(word, pos_x, pos_y);
         }
@@ -185,6 +192,8 @@ impl Puzzle {
                 let word = self.get_horizontal_word(x, y).to_string();
                 if self.remove_word_from_lexicone(curr_lexicone, word.to_string()) {
                     y += word.len();
+                } else {
+                    return false;
                 }
             }
         }
