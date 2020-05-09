@@ -89,7 +89,7 @@ impl Puzzle {
     fn get_veritcal_word_vec(&self, index: usize) -> String {
         let eof = self.calculate_eof(index);
         let mut word = String::new();
-        for i in index..eof {
+        for i in index..(eof+1) {
             if self.current_board[i] == '#' {
                 break;
             }
@@ -193,6 +193,10 @@ impl Puzzle {
                 if self.remove_word_from_lexicone(curr_lexicone, word.to_string()) {
                     y += word.len();
                 } else {
+                    if word.len() < 1 {
+                        y += 1;
+                        continue;
+                    }
                     return false;
                 }
             }
@@ -203,7 +207,7 @@ impl Puzzle {
     pub fn validate_puzzle(&self) -> bool {
         let mut curr_lexicone = self.lexicone.to_vec();
         let vertical = self.validate_verticals(&mut curr_lexicone);
-        let hortizontal = self.validate_horizontals(&mut curr_lexicone);
-        return vertical && hortizontal;
+        let horizontal = self.validate_horizontals(&mut curr_lexicone);
+        return vertical && horizontal;
     }
 }
