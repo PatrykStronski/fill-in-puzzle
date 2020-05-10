@@ -11,9 +11,14 @@ fn remove_from_lexicone(lexicone: &mut Vec<String>, word:String) -> bool {
 }
 
 fn backtrack_step(puz: &mut Puzzle, lexicone: &mut Vec<String>, x: usize, y: usize) -> bool {
-    println!("x: {} y: {}", x, y);
+    if puz.is_hash(x, y) {
+        return backtrack_step(puz, lexicone, x + 1, y);
+    }
     if puz.exceed_bonds(x, y) {
-        return puz.validate_puzzle();
+        if puz.y_critical(y) {
+            return puz.validate_puzzle();
+        }
+        return backtrack_step(puz,lexicone, 0, y+1)
     }
     for word in lexicone.to_vec() {
         if puz.write_word(word.to_string(), x, y, true) {

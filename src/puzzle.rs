@@ -26,6 +26,20 @@ impl Puzzle {
         return self.current_board[self.calculate_index(pos_x, pos_y)];
     }
 
+    pub fn is_hash(&self, pos_x: usize, pos_y: usize) -> bool {
+        if self.get_element(pos_x, pos_y) == '#' {
+            return true;
+        }
+        return false;
+    }
+
+    pub fn y_critical(&self, pos_y: usize) -> bool {
+        if (pos_y +1) < self.height {
+            return false;
+        }
+        return true;
+    }
+
     pub fn print_current_board(&self) -> String {
         let mut board = "".to_string();
         for y in 0..self.height {
@@ -137,7 +151,13 @@ impl Puzzle {
             self.current_board[index] = c;
             index += 1;
         }
-        return true;
+        if index == eof +1 {
+            return true;
+        }
+        if self.current_board[index] == '#' {
+            return true;
+        }
+        return false;
     }
 
     pub fn write_word(&mut self, word: String, pos_x: usize, pos_y: usize, vertical: bool) -> bool {
