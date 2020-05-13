@@ -3,7 +3,7 @@ pub struct Puzzle {
     pub current_board: Vec<char>,
     pub width: usize,
     pub height: usize,
-    pub lexicone: Vec<String>
+    pub lexicone: Vec<String>,
 }
 
 impl Puzzle {
@@ -11,12 +11,16 @@ impl Puzzle {
         return pos_y * self.width + pos_x;
     }
 
+    pub fn x_outof_range(&self, pos_x: usize) -> bool {
+        return pos_x >= self.width;
+    }
+
     pub fn exceed_bonds(&self, pos_x: usize, pos_y: usize) -> bool {
         return self.calculate_index(pos_x, pos_y) >= (self.width * self.height);
     }
 
     fn calculate_eof(&self, ind: usize) -> usize {
-        return (( ind / self.width ) +1 ) * self.width -1;
+        return ((ind / self.width) + 1) * self.width - 1;
     }
 
     pub fn get_element(&self, pos_x: usize, pos_y: usize) -> char {
@@ -34,7 +38,7 @@ impl Puzzle {
     }
 
     pub fn y_critical(&self, pos_y: usize) -> bool {
-        if (pos_y +1) < self.height {
+        if (pos_y + 1) < self.height {
             return false;
         }
         return true;
@@ -44,7 +48,7 @@ impl Puzzle {
         let mut board = "".to_string();
         for y in 0..self.height {
             for x in 0..self.width {
-                board.push_str(&format!("{}",self.get_element(x, y)));
+                board.push_str(&format!("{}", self.get_element(x, y)));
             }
             board.push_str("\n");
         }
@@ -103,7 +107,7 @@ impl Puzzle {
     fn get_veritcal_word_vec(&self, index: usize) -> String {
         let eof = self.calculate_eof(index);
         let mut word = String::new();
-        for i in index..(eof+1) {
+        for i in index..(eof + 1) {
             if self.current_board[i] == '#' {
                 break;
             }
@@ -151,7 +155,7 @@ impl Puzzle {
             self.current_board[index] = c;
             index += 1;
         }
-        if index == eof +1 {
+        if index == eof + 1 {
             return true;
         }
         if self.current_board[index] == '#' {
@@ -177,6 +181,9 @@ impl Puzzle {
     }
 
     fn remove_word_from_lexicone(&self, curr_lexicone: &mut Vec<String>, word: String) -> bool {
+        if word.len() == 0 {
+            return false;
+        }
         for x in 0..curr_lexicone.len() {
             if word == curr_lexicone[x] {
                 curr_lexicone.remove(x);
@@ -209,15 +216,18 @@ impl Puzzle {
         for x in 0..self.width {
             let mut y = 0;
             while y < max {
+                if self.is_hash(x, y) {
+                    y += 1;
+                    continue;
+                }
                 let word = self.get_horizontal_word(x, y).to_string();
                 if self.remove_word_from_lexicone(curr_lexicone, word.to_string()) {
                     y += word.len();
                 } else {
-                    if word.len() < 1 {
-                        y += 1;
-                        continue;
+                    if word.len() > 1 {
+                        return false;
                     }
-                    return false;
+                    y += 1;
                 }
             }
         }

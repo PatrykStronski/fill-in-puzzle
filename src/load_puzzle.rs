@@ -1,12 +1,12 @@
 use crate::puzzle::Puzzle;
+use std::env;
 use std::fs::File;
 use std::io::{BufRead, BufReader, Error};
-use std::env;
 
 struct Board {
     height: usize,
     width: usize,
-    board: Vec<char>
+    board: Vec<char>,
 }
 
 fn get_board(filename: String) -> Result<Board, Error> {
@@ -31,7 +31,7 @@ fn get_board(filename: String) -> Result<Board, Error> {
     Ok(Board {
         width: wdth,
         height: hght,
-        board: brd
+        board: brd,
     })
 }
 
