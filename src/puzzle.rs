@@ -1,3 +1,5 @@
+use crate::wordlengths::WordLengths;
+
 pub struct Puzzle {
     pub init_board: Vec<char>,
     pub current_board: Vec<char>,
@@ -19,7 +21,7 @@ impl Puzzle {
         return self.calculate_index(pos_x, pos_y) >= (self.width * self.height);
     }
 
-    fn calculate_eof(&self, ind: usize) -> usize {
+    fn calculate_eol(&self, ind: usize) -> usize {
         return ((ind / self.width) + 1) * self.width - 1;
     }
 
@@ -42,6 +44,20 @@ impl Puzzle {
             return false;
         }
         return true;
+    }
+
+    pub fn get_vertical_word_length(&self, pos_x: usize, pos_y: usize) -> usize {
+        let mut index = self.calculate_index(pos_x, pos_y);
+        let mut len: usize = 0;
+        let eof = self.calculate_eol(index);
+        let mut word = String::new();
+        for i in index..(eof + 1) {
+            if self.current_board[i] == '#' {
+                return len;
+            }
+            len += 1;
+        }
+        return len;
     }
 
     pub fn print_current_board(&self) -> String {
@@ -74,7 +90,7 @@ impl Puzzle {
 
     fn get_veritcal_word(&self, pos_x: usize, pos_y: usize) -> String {
         let index = self.calculate_index(pos_x, pos_y);
-        let eof = self.calculate_eof(index);
+        let eof = self.calculate_eol(index);
         let mut word = String::new();
         for i in index..eof {
             if self.current_board[i] == '#' {
@@ -105,7 +121,7 @@ impl Puzzle {
     }
 
     fn get_veritcal_word_vec(&self, index: usize) -> String {
-        let eof = self.calculate_eof(index);
+        let eof = self.calculate_eol(index);
         let mut word = String::new();
         for i in index..(eof + 1) {
             if self.current_board[i] == '#' {
@@ -126,30 +142,11 @@ impl Puzzle {
         return self.get_horizontal_word(pos_x, pos_y);
     }
 
-    fn write_horizontal_word(&mut self, word: String, pos_x: usize, pos_y: usize) -> bool {
+    pub fn write_word(&mut self, word: String, pos_x: usize, pos_y: usize) -> bool {
         let mut index = self.calculate_index(pos_x, pos_y);
-        let max = self.width * self.height;
+        let eof = self.calculate_eol(index);
         for c in word.chars() {
-            if index >= max {
-                return false;
-            }
-            if self.current_board[index] == '#' {
-                return false;
-            }
-            self.current_board[index] = c;
-            index += self.width;
-        }
-        return true;
-    }
-
-    fn write_veritcal_word(&mut self, word: String, pos_x: usize, pos_y: usize) -> bool {
-        let mut index = self.calculate_index(pos_x, pos_y);
-        let eof = self.calculate_eof(index);
-        for c in word.chars() {
-            if index > eof {
-                return false;
-            }
-            if self.current_board[index] == '#' {
+            if index > eof || self.current_board[index] == '#' {
                 return false;
             }
             self.current_board[index] = c;
@@ -162,13 +159,6 @@ impl Puzzle {
             return true;
         }
         return false;
-    }
-
-    pub fn write_word(&mut self, word: String, pos_x: usize, pos_y: usize, vertical: bool) -> bool {
-        if vertical {
-            return self.write_veritcal_word(word, pos_x, pos_y);
-        }
-        return self.write_horizontal_word(word, pos_x, pos_y);
     }
 
     fn get_word_index_from_lexicone(&self, curr_lexicone: &Vec<String>, word: String) -> i16 {
@@ -240,4 +230,5 @@ impl Puzzle {
         let horizontal = self.validate_horizontals(&mut curr_lexicone);
         return vertical && horizontal;
     }
+
 }
