@@ -13,7 +13,7 @@ fn get_new_lexicone(lexicone: &Vec<String>, word: &String) -> Vec<String> {
 }
 
 fn filter_lexicone_by_length(lexicone: &Vec<String>, length: usize) -> Vec<String> {
-    let mut new_lexicone = Vec::<String>::new();
+    let mut new_lexicone = Vec::<String>::with_capacity(lexicone.len());
     for word in lexicone {
         if word.len() == length {
             new_lexicone.push(word.to_string());
@@ -23,10 +23,8 @@ fn filter_lexicone_by_length(lexicone: &Vec<String>, length: usize) -> Vec<Strin
 }
 
 fn backtrack_step(puz: &mut Puzzle, lexicone: &mut Vec<String>, x: usize, y: usize) -> bool {
-    //println!("x: {}, y: {}", x, y);
-    //println!("{}", puz.print_current_board());
     if puz.exceed_bonds(x, y) {
-        return puz.validate_puzzle();
+        return puz.validate_horizontals(&mut lexicone.to_vec());
     }
     if puz.x_outof_range(x) {
         return backtrack_step(puz, lexicone, 0, y + 1);
@@ -40,8 +38,14 @@ fn backtrack_step(puz: &mut Puzzle, lexicone: &mut Vec<String>, x: usize, y: usi
         if puz.write_word(word.to_string(), x, y) {
             let mut lexicone_new = get_new_lexicone(lexicone, &word);
             let mut x_shifted = x + word.len();
-            if backtrack_step(puz, &mut lexicone_new.to_vec(), x_shifted, y) {
-                return true;
+            if puz.x_outof_range(x_shifted) {
+                if backtrack_step(puz, lexicone, 0, y + 1) {
+                    return true;
+                }
+            } else {
+                if backtrack_step(puz, &mut lexicone_new.to_vec(), x_shifted, y) {
+                    return true;
+                }
             }
         }
     }

@@ -201,7 +201,7 @@ impl Puzzle {
         return true;
     }
 
-    fn validate_horizontals(&self, curr_lexicone: &mut Vec<String>) -> bool {
+    pub fn validate_horizontals(&self, curr_lexicone: &mut Vec<String>) -> bool {
         let max = self.height;
         for x in 0..self.width {
             let mut y = 0;
@@ -223,12 +223,4 @@ impl Puzzle {
         }
         return true;
     }
-
-    pub fn validate_puzzle(&self) -> bool {
-        let mut curr_lexicone = self.lexicone.to_vec();
-        let vertical = self.validate_verticals(&mut curr_lexicone);
-        let horizontal = self.validate_horizontals(&mut curr_lexicone);
-        return vertical && horizontal;
-    }
-
 }
