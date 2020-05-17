@@ -38,14 +38,8 @@ fn backtrack_step(puz: &mut Puzzle, lexicone: &mut Vec<String>, x: usize, y: usi
         if puz.write_word(word.to_string(), x, y) {
             let mut lexicone_new = get_new_lexicone(lexicone, &word);
             let mut x_shifted = x + word.len();
-            if puz.x_outof_range(x_shifted) {
-                if backtrack_step(puz, lexicone, 0, y + 1) {
-                    return true;
-                }
-            } else {
-                if backtrack_step(puz, &mut lexicone_new.to_vec(), x_shifted, y) {
-                    return true;
-                }
+            if backtrack_step(puz, &mut lexicone_new.to_vec(), x_shifted, y) {
+                return true;
             }
         }
     }
