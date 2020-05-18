@@ -1,10 +1,9 @@
-use crate::wordlengths::WordLengths;
-
 #[derive(Clone)]
 pub struct Variable {
     pub domain: Vec<String>,
     pub word: String,
-    pub starting_index: usize
+    pub starting_index: usize,
+    pub length: usize
 }
 
 pub struct Puzzle {
@@ -94,6 +93,7 @@ impl Puzzle {
                     domain: self.fetch_domain(l),
                     word: String::new(),
                     starting_index: self.calculate_index(x, y),
+                    length: l
                 };
                 x += l;
                 self.variable_board.push(var);
@@ -199,6 +199,35 @@ impl Puzzle {
         return true;
     }
 
+    pub fn reinsert_to_forthcoming_domains(&mut self, word: String, index: usize) {
+        let mut start = index + 1;
+        let wd_len = word.len();
+        while start < self.variable_board.len() {
+            if wd_len == self.variable_board[start].length {
+                self.variable_board[start].domain.push(word.to_string());
+            }
+            start +=1;
+        }
+    }
+
+    pub fn delete_from_forthcoming_domains(&mut self, word: String, index: usize) {
+        let mut start = index + 1;
+        let wd_len = word.len();
+        while start < self.variable_board.len() {
+            if wd_len !=self.variable_board[start].length {
+                start += 1;
+                continue;
+            }
+            for i in 0..self.variable_board[start].domain.len() {
+                if self.variable_board[start].domain[i] == word {
+                    self.variable_board[start].domain.remove(i);
+                    break;
+                }
+            }
+            start += 1;
+        }
+    }
+
     pub fn validate_horizontals(&self, curr_lexicone: &mut Vec<String>) -> bool {
         let max = self.height;
         for x in 0..self.width {
@@ -224,8 +253,6 @@ impl Puzzle {
 
     pub fn validate_puzzle(&self) -> bool {
         let mut curr_lexicone = self.lexicone.to_vec();
-        let vertical = self.validate_verticals(&mut curr_lexicone);
-        let horizontal = self.validate_horizontals(&mut curr_lexicone);
-        return vertical && horizontal;
+        return self.validate_horizontals(&mut curr_lexicone);
     }
 }

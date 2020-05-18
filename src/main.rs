@@ -1,7 +1,6 @@
 mod load_puzzle;
 mod puzzle;
 mod solve_puzzle;
-mod wordlengths;
 use std::io::Error;
 
 fn main() -> Result<(), Error> {
