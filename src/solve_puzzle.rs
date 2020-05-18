@@ -17,16 +17,23 @@ pub fn delete_from_forthcoming_domains(
     return new_domains;
 }
 
-fn backtrack_step(puz: &mut Puzzle, domains: Vec<Variable>, index: usize) -> bool {
+fn remove_word_from_lexicone(lexicone: &Vec<String>, word: &String) -> Vec<String> {
+    let mut curr_lexicone = lexicone.to_vec();
+    curr_lexicone.retain(|x| *x != *word);
+    return curr_lexicone;
+}
+
+fn backtrack_step(puz: &mut Puzzle, domains: Vec<Variable>, lexicone: &mut Vec<String>, index: usize) -> bool {
     if index >= domains.len() {
-        return puz.validate_puzzle();
+        return puz.validate_horizontals(lexicone);
     }
     let var = domains[index].clone();
     for word in var.domain.to_vec() {
         let start = var.starting_index;
         puz.write_word(word.to_string(), start);
-        let new_domains = delete_from_forthcoming_domains(&domains, word.to_string(), index);
-        if backtrack_step(puz, new_domains, index + 1) {
+        let mut new_lexicone = remove_word_from_lexicone(lexicone, &word);
+        let new_domains = delete_from_forthcoming_domains(&domains, word, index);
+        if backtrack_step(puz, new_domains, &mut new_lexicone, index + 1) {
             return true;
         }
     }
@@ -34,7 +41,7 @@ fn backtrack_step(puz: &mut Puzzle, domains: Vec<Variable>, index: usize) -> boo
 }
 
 fn backtrack(puz: &mut Puzzle, domains: Vec<Variable>) -> bool {
-    return backtrack_step(puz, domains.to_vec(), 0);
+    return backtrack_step(puz, domains.to_vec(), &mut puz.lexicone.to_vec(), 0);
 }
 
 pub fn solve(puz: &mut Puzzle, nmd: usize) {

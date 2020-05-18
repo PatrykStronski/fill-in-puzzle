@@ -121,7 +121,7 @@ impl Puzzle {
         return word;
     }
 
-    fn remove_word_from_lexicone(&self, curr_lexicone: &mut Vec<String>, word: String) -> bool {
+    pub fn remove_word_from_lexicone(&self, curr_lexicone: &mut Vec<String>, word: String) -> bool {
         if word.len() == 0 {
             return false;
         }
