@@ -1,4 +1,4 @@
-use crate::puzzle::Puzzle;
+use crate::puzzle::{Puzzle, Variable};
 use std::env;
 use std::fs::File;
 use std::io::{BufRead, BufReader, Error};
@@ -58,6 +58,8 @@ pub fn get_puzzle(number: usize) -> Result<Puzzle, Error> {
         width: board.width,
         height: board.height,
         lexicone: lexicon.to_vec(),
+        used_up: Vec::<String>::new(),
+        variable_board: Vec::<Variable>::new()
     };
     Ok(puz_full)
 }
