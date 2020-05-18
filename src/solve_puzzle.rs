@@ -23,7 +23,12 @@ fn remove_word_from_lexicone(lexicone: &Vec<String>, word: &String) -> Vec<Strin
     return curr_lexicone;
 }
 
-fn backtrack_step(puz: &mut Puzzle, domains: Vec<Variable>, lexicone: &mut Vec<String>, index: usize) -> bool {
+fn backtrack_step(
+    puz: &mut Puzzle,
+    domains: Vec<Variable>,
+    lexicone: &mut Vec<String>,
+    index: usize,
+) -> bool {
     if index >= domains.len() {
         return puz.validate_horizontals(lexicone);
     }

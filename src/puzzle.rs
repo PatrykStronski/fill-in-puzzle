@@ -121,17 +121,20 @@ impl Puzzle {
         return word;
     }
 
-    pub fn remove_word_from_lexicone(&self, curr_lexicone: &mut Vec<String>, word: String) -> bool {
+    fn remove_word_from_lexicone(&self, curr_lexicone: &mut Vec<String>, word: String) -> bool {
         if word.len() == 0 {
             return false;
         }
-        for x in 0..curr_lexicone.len() {
-            if word == curr_lexicone[x] {
-                curr_lexicone.remove(x);
+        let ind = curr_lexicone.iter().position(|x| *x == word);
+        match ind {
+            Some(index) => {
+                curr_lexicone.remove(index);
                 return true;
             }
+            None => {
+                return false;
+            }
         }
-        return false;
     }
 
     fn get_veritcal_word_vec(&self, index: usize) -> String {
@@ -153,7 +156,7 @@ impl Puzzle {
         let mut ind: usize = 0;
         let max = self.current_board.len();
         while ind < max {
-            let word = self.get_veritcal_word_vec(ind).to_string();
+            let word = self.get_veritcal_word_vec(ind);
             if word == "" {
                 ind += 1;
                 continue;
@@ -176,7 +179,7 @@ impl Puzzle {
                     y += 1;
                     continue;
                 }
-                let word = self.get_horizontal_word(x, y).to_string();
+                let word = self.get_horizontal_word(x, y);
                 if self.remove_word_from_lexicone(curr_lexicone, word.to_string()) {
                     y += word.len();
                 } else {
