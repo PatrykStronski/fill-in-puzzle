@@ -45,20 +45,23 @@ fn get_lexicon(filename: String) -> Result<Vec<String>, Error> {
 }
 
 pub fn get_puzzle(number: usize) -> Result<Puzzle, Error> {
-    let puz_name = format!("./resources/puzzle{}", number);
-    let lexicon_name = format!("./resources/words{}", number);
+    let puz_name = format!(
+        "/home/azath/Documents/Projects/ai/fill-in-puzzle/resources/puzzle{}",
+        number
+    );
+    let lexicon_name = format!(
+        "/home/azath/Documents/Projects/ai/fill-in-puzzle/resources/words{}",
+        number
+    );
 
     let board = get_board(puz_name)?;
     let lexicon = get_lexicon(lexicon_name)?;
 
     let puz_full = Puzzle {
-        init_board: board.board.to_vec(),
         current_board: board.board.to_vec(),
         width: board.width,
         height: board.height,
         lexicone: lexicon.to_vec(),
-        used_up: Vec::<String>::new(),
-        variable_board: Vec::<Variable>::new()
     };
     Ok(puz_full)
 }

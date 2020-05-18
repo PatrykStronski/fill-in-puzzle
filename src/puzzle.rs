@@ -1,19 +1,15 @@
 #[derive(Clone)]
 pub struct Variable {
     pub domain: Vec<String>,
-    pub word: String,
     pub starting_index: usize,
-    pub length: usize
+    pub length: usize,
 }
 
 pub struct Puzzle {
-    pub init_board: Vec<char>,
     pub current_board: Vec<char>,
-    pub variable_board: Vec<Variable>,
     pub width: usize,
     pub height: usize,
     pub lexicone: Vec<String>,
-    pub used_up: Vec<String>
 }
 
 impl Puzzle {
@@ -58,7 +54,7 @@ impl Puzzle {
     }
 
     fn fetch_domain(&self, length: usize) -> Vec<String> {
-        let mut new_lexicone = Vec::<String>::with_capacity(self.lexicone.len()/2);
+        let mut new_lexicone = Vec::<String>::with_capacity(self.lexicone.len() / 2);
         for word in &self.lexicone {
             if word.len() == length {
                 new_lexicone.push(word.to_string());
@@ -66,31 +62,30 @@ impl Puzzle {
         }
         return new_lexicone;
     }
-    
 
-    pub fn create_variable_board(&mut self) {
-        self.variable_board = Vec::<Variable>::with_capacity(self.height * 2);
-        for y in 0..self.height{
+    pub fn create_variable_board(&mut self) -> Vec<Variable> {
+        let mut variable_board = Vec::<Variable>::with_capacity(self.height * 2);
+        for y in 0..self.height {
             let mut x = 0;
             while x < self.width - 1 {
-                let l = self.get_vertical_word_len(x,y);
+                let l = self.get_vertical_word_len(x, y);
                 if l < 2 {
                     x = x + 1 + l;
                     continue;
                 }
                 let var = Variable {
                     domain: self.fetch_domain(l),
-                    word: String::new(),
                     starting_index: self.calculate_index(x, y),
-                    length: l
+                    length: l,
                 };
                 x += l;
-                self.variable_board.push(var);
+                variable_board.push(var);
             }
         }
+        return variable_board;
     }
 
-    pub fn write_word(&mut self, word: String, ind:usize) {
+    pub fn write_word(&mut self, word: String, ind: usize) {
         let mut index: usize = ind;
         for c in word.chars() {
             self.current_board[index] = c;
@@ -125,7 +120,6 @@ impl Puzzle {
         }
         return word;
     }
-
 
     fn remove_word_from_lexicone(&self, curr_lexicone: &mut Vec<String>, word: String) -> bool {
         if word.len() == 0 {
