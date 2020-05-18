@@ -134,6 +134,39 @@ impl Puzzle {
         return false;
     }
 
+    fn get_veritcal_word_vec(&self, index: usize) -> String {
+        let eof = self.calculate_eol(index);
+        let mut word = String::new();
+        for i in index..(eof + 1) {
+            if self.current_board[i] == '#' {
+                break;
+            }
+            word.push(self.current_board[i]);
+        }
+        if word.len() < 2 {
+            return String::from("");
+        }
+        return word;
+    }
+
+    fn validate_verticals(&self, curr_lexicone: &mut Vec<String>) -> bool {
+        let mut ind: usize = 0;
+        let max = self.current_board.len();
+        while ind < max {
+            let word = self.get_veritcal_word_vec(ind).to_string();
+            if word == "" {
+                ind += 1;
+                continue;
+            }
+            if self.remove_word_from_lexicone(curr_lexicone, word.to_string()) {
+                ind += word.len();
+            } else {
+                return false;
+            }
+        }
+        return true;
+    }
+
     pub fn validate_horizontals(&self, curr_lexicone: &mut Vec<String>) -> bool {
         let max = self.height;
         for x in 0..self.width {
@@ -159,6 +192,8 @@ impl Puzzle {
 
     pub fn validate_puzzle(&self) -> bool {
         let mut curr_lexicone = self.lexicone.to_vec();
-        return self.validate_horizontals(&mut curr_lexicone);
+        let vertical = self.validate_verticals(&mut curr_lexicone);
+        let horizontal = self.validate_horizontals(&mut curr_lexicone);
+        return vertical && horizontal;
     }
 }
