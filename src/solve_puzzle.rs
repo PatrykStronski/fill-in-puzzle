@@ -7,12 +7,7 @@ pub fn delete_from_forthcoming_domains(domains: &Vec<Variable>, word: String, in
         if var.length != word.len() {
             continue;
         }
-        for j in 0..var.domain.len() {
-            if var.domain[j] == word {
-                var.domain.remove(j);
-                break;
-            }
-        }
+        var.domain.retain(|x| *x != word);
     }
     return new_domains;
 }
