@@ -1,5 +1,4 @@
 use crate::puzzle::{Puzzle, Variable};
-use std::env;
 use std::fs::File;
 use std::io::{BufRead, BufReader, Error};
 
